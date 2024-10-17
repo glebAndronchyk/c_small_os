@@ -36,7 +36,7 @@ int delete_file(char* name) {
         }
     }
     execution_error("File not found");
-    return 0;
+    return 1;
 }
 
 int create_file(char* name) {
