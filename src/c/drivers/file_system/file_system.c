@@ -31,7 +31,7 @@ int delete_file(char* name) {
                 string_copy(fs[i].name, "");
                 string_copy(fs[i].content, "");
                 execution_success("File deleted");
-                return 1;
+                break;
             }
         }
     }
@@ -42,9 +42,10 @@ int delete_file(char* name) {
 int create_file(char* name) {
     if (string_length(name) != 0) {
         for (int  i = 0; i < MAX_FILES; i++) {
-            // if (cmp_string(name, fs[i].name)) {
-            //     break;
-            // }
+            if (cmp_string(name, fs[i].name)) {
+                execution_error("File already exists");
+                return 1;
+            }
 
             if (!fs[i].is_memory_used) {
                 fs[i] = (struct file) {
