@@ -14,17 +14,17 @@ typedef struct {
     command_handler handler;
 } commands;
 
+
 extern commands command_table[MAX_COMMANDS];
 
 void unknown_command();
 void start_new_command();
 char* read_data_in_row(int row);
 void exec_command(const char* cmd_buffer);
-void backspace_pressed();
-void enter_pressed();
-void char_pressed(char key);
 void bash_key_handler(const struct keyboard_event event);
 void show_title();
 void init_bash();
+void clear_commands();
+void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event));
 
 #endif // BASH_H

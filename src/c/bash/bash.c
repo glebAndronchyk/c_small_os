@@ -2,22 +2,26 @@
 #include "../drivers/framebuffer/framebuffer.h"
 #include "../utils/cmp_string/cmp_string.h"
 #include "../drivers/keyboard/keyboard.h"
-#include "../utils/VGA_COLORS/VGA_COLORS.h"
 #include "bash.h"
+#include "../utils/string_length/string_length.h"
+#include "./messages/messages.h";
 
 commands command_table[MAX_COMMANDS] = {
-    { "clear", clear_framebuffer},
+    { "clear", clear_commands},
     { "create", create_file},
     { "list", list_files},
+    { "read", read_file},
+    { "restore-vga", restore_buffer},
+    { "write", write_file}
 };
 
-void unknown_command() {
-    system_message("Unknown command!", 0x4, 0xF);
+void clear_commands() {
+    clear_framebuffer();
+    app_name();
 }
 
 void start_new_command() {
     cmd_length = 0;
-    put_cursor(get_cursor());
 }
 
 char* read_data_in_row(int row) {
@@ -28,6 +32,12 @@ char* read_data_in_row(int row) {
     for (int col = 0; col < VGA_WIDTH; col++) {
         const char ch = get_char_at(row_pos + col * 2);
         const char chNext = get_char_at(row_pos + (col + 1) * 2);
+
+        if (ch == '>' && chNext == ' ') {
+            col++;
+            continue;
+        }
+
         if (ch == ' ' && chNext == ' ') {
             message[buffer_idx] = '\0';
             break;
@@ -47,7 +57,7 @@ void process_command_result(int result) {
     if (result) {
         start_new_command();
     } else {
-        system_message("Failed to execute command!", COLOR_RED, COLOR_BLACK);
+        execution_error("Failed to execute command");
     }
 }
 
@@ -84,16 +94,18 @@ CommandArg split_command_and_arg(const char* cmd_buffer) {
 void exec_command(const char* cmd_buffer) {
     new_line();
 
-    CommandArg command_meta = split_command_and_arg(cmd_buffer);
-    for (int k = 0; k < MAX_COMMANDS; k++) {
-        if (cmp_string(command_table[k].name, command_meta.command) == 0) {
-            const int result = command_table[k].handler(command_meta.argument);
-            return process_command_result(result);
+    if (string_length(cmd_buffer) != 0) {
+        CommandArg command_meta = split_command_and_arg(cmd_buffer);
+        for (int k = 0; k < MAX_COMMANDS; k++) {
+            if (cmp_string(command_table[k].name, command_meta.command)) {
+                const int result = command_table[k].handler(command_meta.argument);
+                return process_command_result(result);
+            }
         }
-    }
 
-    unknown_command();
-    start_new_command();
+        unknown_command();
+        start_new_command();
+    }
 }
 
 void backspace_pressed() {
@@ -114,7 +126,7 @@ void enter_pressed() {
 void char_pressed(char key) {
     if (cmd_length == VGA_WIDTH) {
         cmd_length = 0;
-        system_message("MESSAGE OVERFLOWS BUFFER", 0x4, 0x3);
+        execution_error("Message overflows buffer");
         current_row++;
         put_cursor(get_cursor());
         return;
@@ -123,7 +135,7 @@ void char_pressed(char key) {
     cmd_length++;
     const char *msg = prepare_message(key);
 
-    write_buffer_message(msg, 0xf, 0x1);
+    char_press(msg);
 }
 
 void bash_key_handler(const struct keyboard_event event) {
@@ -139,12 +151,14 @@ void bash_key_handler(const struct keyboard_event event) {
     }
 }
 
-void show_title() {
-    system_message("My shell v1.0.0", COLOR_RED, COLOR_WHITE);
+void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event)) {
+    save_buffer_content();
+    clear_framebuffer();
+    keyboard_set_handler(app_keyboard_handler);
 }
 
 void init_bash() {
     keyboard_set_handler(bash_key_handler);
     clear_framebuffer();
-    show_title();
+    app_name();
 }

@@ -1,6 +1,8 @@
 #ifndef VGA_COLORS_H
 #define VGA_COLORS_H
 
+char get_color_word(unsigned char background, unsigned char foreground);
+
 typedef enum {
     COLOR_BLACK = 0x0,
     COLOR_BLUE = 0x1,
@@ -17,7 +19,11 @@ typedef enum {
     COLOR_LIGHT_RED = 0xC,
     COLOR_LIGHT_MAGENTA = 0xD,
     COLOR_YELLOW = 0xE,
-    COLOR_WHITE = 0xF
+    COLOR_WHITE = 0xF,
+
+
+    DEFAULT_BACKGROUND = 0x0,
+    DEFAULT_FOREGROUND = 0xA,
 } VGA_Color;
 
 #endif

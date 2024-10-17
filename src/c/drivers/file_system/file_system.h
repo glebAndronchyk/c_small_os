@@ -2,7 +2,7 @@
 #define FILE_SYSTEM_H
 #include "../framebuffer/framebuffer.h"
 
-#define MAX_FILE_CONTENT VGA_WIDTH * VGA_HEIGHT
+#define MAX_FILE_CONTENT VGA_BUFFER_SIZE
 #define MAX_FILES 10
 
 struct file {
@@ -13,5 +13,8 @@ struct file {
 
 int create_file(char* name);
 int list_files(char* name);
+int write_file(char* name);
+int read_file(char* name);
+int execution_success_sequentially(char* name);
 
 #endif // FILE_SYSTEM_H

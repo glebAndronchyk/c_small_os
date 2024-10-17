@@ -1,23 +1,45 @@
 #include "../framebuffer/framebuffer.h"
+#include "../../editor/editor.h"
 #include "../../utils/string_concat/string_concat.h"
 #include "../../utils/string_copy/string_copy.h"
+#include "../../utils/string_length/string_length.h"
 #include "../../utils/VGA_COLORS/VGA_COLORS.h"
 #include "file_system.h"
 
+#include <stddef.h>
+
+#include "../../bash/messages/messages.h"
+#include "../../utils/cmp_string/cmp_string.h"
+
 struct file fs[MAX_FILES];
 
+struct file* get_file(char* file_name) {
+    for (int i = 0; i < MAX_FILES; i++) {
+        if (cmp_string(fs[i].name, file_name)) {
+            return &fs[i];
+        }
+    }
+
+    return NULL;
+}
+
 int create_file(char* name) {
-    for (int  i = 0; i < MAX_FILES; i++) {
-        if (!fs[i].is_memory_used) {
+    if (string_length(name) != 0) {
+        for (int  i = 0; i < MAX_FILES; i++) {
+            // if (cmp_string(name, fs[i].name)) {
+            //     break;
+            // }
 
-            fs[i] = (struct file) {
-                .is_memory_used = 1,
-                .content = '\0',
-            };
-            string_copy(fs[i].name, name);
+            if (!fs[i].is_memory_used) {
+                fs[i] = (struct file) {
+                    .is_memory_used = 1,
+                };
+                string_copy(fs[i].content, "");
+                string_copy(fs[i].name, name);
 
-            system_message("File created", COLOR_RED, COLOR_BLUE);
-            return 1;
+                execution_success("File created");
+                return 1;
+            }
         }
     }
 
@@ -25,20 +47,44 @@ int create_file(char* name) {
 }
 
 int list_files(char* noop) {
-    int wrote = 0;
-
-    system_message("root\0", COLOR_RED, COLOR_BLUE);
+    execution_success_sequentially("root\0");
 
     for (int i = 0; i < MAX_FILES; i++) {
         if (fs[i].is_memory_used) {
-            wrote++;
-
             char message[100] = "|-->";
             string_concat(message, fs[i].name);
 
-            system_message(message, COLOR_RED, COLOR_BLUE);
+            execution_success_sequentially(message);
         }
     }
 
-    return wrote > 0;
+    new_line_with_starter("> ");
+
+    return 1;
 }
+
+int write_file(char* file_name) {
+    struct file* file_to_write = get_file(file_name);
+    if (file_to_write->is_memory_used) {
+        start_editor(file_to_write);
+        return 1;
+    }
+
+    return 0;
+}
+
+int read_file(char* file_name) {
+    for (int i = 0; i < MAX_FILES; i++) {
+        if (cmp_string(fs[i].name, file_name)) {
+            if (string_length(fs[i].content) != 0) {
+                execution_success(fs[i].content);
+            } else {
+                execution_error("File is empty");
+            }
+
+            return 1;
+        }
+    }
+    return 0;
+}
+
