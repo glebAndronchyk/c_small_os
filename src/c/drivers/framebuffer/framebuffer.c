@@ -169,6 +169,7 @@ void restore_position_from_latest_save() {
         .row = 0,
     };
 
+    write_buffer_message("> ", DEFAULT_BACKGROUND, DEFAULT_FOREGROUND);
     put_cursor(get_cursor());
 }
 
