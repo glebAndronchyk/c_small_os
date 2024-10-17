@@ -16,5 +16,6 @@ int list_files(char* name);
 int write_file(char* name);
 int read_file(char* name);
 int execution_success_sequentially(char* name);
+int delete_file(char* name);
 
 #endif // FILE_SYSTEM_H

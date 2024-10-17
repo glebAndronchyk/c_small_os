@@ -12,7 +12,8 @@ commands command_table[MAX_COMMANDS] = {
     { "list", list_files},
     { "read", read_file},
     { "restore-vga", restore_buffer},
-    { "write", write_file}
+    { "write", write_file},
+    {"delete", delete_file}
 };
 
 void clear_commands() {
