@@ -111,7 +111,8 @@ void exec_command(const char* cmd_buffer) {
 void backspace_pressed() {
     int char_offset = get_cursor() * 2;
 
-    if (current_col > 0) {
+    if (current_col > 2) {
+        cmd_length--;
         current_col--;
     }
 
@@ -124,11 +125,9 @@ void enter_pressed() {
 }
 
 void char_pressed(char key) {
-    if (cmd_length == VGA_WIDTH) {
+    if (cmd_length == VGA_WIDTH - 1) {
         cmd_length = 0;
         execution_error("Message overflows buffer");
-        current_row++;
-        put_cursor(get_cursor());
         return;
     }
 
