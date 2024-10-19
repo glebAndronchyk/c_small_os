@@ -45,5 +45,7 @@ void save_buffer_content();
 void restore_buffer();
 void buffer_copy(char* dest, char* src);
 void reset_positions();
+void fill_sector(unsigned char background, int pos);
+void fill_sector_with_char(unsigned foreground, int pos, char character);
 
 #endif

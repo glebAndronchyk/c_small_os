@@ -24,16 +24,11 @@ _Noreturn void halt_loop() {
     while (1) { halt(); }
 }
 
-void timer_tick_handler() {
-    // do something when timer ticks
-}
-
 /**
  * This is where the bootloader transfers control to.
  */
 void kernel_entry() {
     init_kernel();
-    timer_set_handler(timer_tick_handler);
     init_bash();
     halt_loop();
 }

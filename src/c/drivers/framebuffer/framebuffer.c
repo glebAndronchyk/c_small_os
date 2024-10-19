@@ -63,6 +63,18 @@ void clear_char(int char_offset) {
     put_cursor(get_cursor());
 }
 
+void fill_sector_with_char(unsigned foreground, int pos, char character) {
+    volatile char *framebuffer = (volatile char*) VGA_ADDRESS;
+    framebuffer[pos] = character;
+    framebuffer[pos + 1] = get_color_word( COLOR_BLACK, foreground);
+
+}
+
+void fill_sector(unsigned char background, int pos) {
+    volatile char *framebuffer = (volatile char*) VGA_ADDRESS;
+    framebuffer[pos] = get_color_word(background, background);
+}
+
 void write_buffer_message(const char* message, unsigned char background, unsigned char foreground) {
     volatile char *framebuffer = (volatile char*) VGA_ADDRESS;
 

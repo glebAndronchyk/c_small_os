@@ -25,6 +25,7 @@ void bash_key_handler(const struct keyboard_event event);
 void show_title();
 void init_bash();
 void clear_commands();
+void return_to_bash();
 void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event));
 
 #endif // BASH_H

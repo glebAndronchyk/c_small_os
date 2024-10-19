@@ -42,8 +42,7 @@ void editor_char_pressed(char key) {
 void exit_editor() {
     string_copy(used_file->content, editor_buffer);
 
-    init_bash();
-    restore_buffer();
+    return_to_bash();
     used_file = (struct file*) 0;
 }
 
@@ -65,5 +64,6 @@ void editor_key_handler(const struct keyboard_event event) {
 void start_editor(struct file* file_data) {
     used_file = file_data;
     give_control_to_app(editor_key_handler);
+    execution_success_sequentially("Editor v0.0.1");
     write_buffer_message(file_data->content, COLOR_WHITE, COLOR_BLACK);
 }

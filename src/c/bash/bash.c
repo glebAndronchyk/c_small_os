@@ -3,8 +3,11 @@
 #include "../utils/cmp_string/cmp_string.h"
 #include "../drivers/keyboard/keyboard.h"
 #include "bash.h"
+
+#include "../drivers/timer/timer.h"
 #include "../utils/string_length/string_length.h"
 #include "./messages/messages.h";
+#include "../screensaver/screensaver.h";
 
 commands command_table[MAX_COMMANDS] = {
     { "clear", clear_commands},
@@ -13,8 +16,13 @@ commands command_table[MAX_COMMANDS] = {
     { "read", read_file},
     { "restore-vga", restore_buffer},
     { "write", write_file},
-    {"delete", delete_file}
+    {"delete", delete_file},
+    {"sleep", start_screensaver},
 };
+
+int last_time_interacted = 0;
+
+// command_handler timer_commands_stack[MAX_COMMANDS];
 
 void clear_commands() {
     clear_framebuffer();
@@ -140,6 +148,8 @@ void char_pressed(char key) {
 
 void bash_key_handler(const struct keyboard_event event) {
     if (event.key_character && event.type == EVENT_KEY_PRESSED) {
+        last_time_interacted = 0;
+
         switch (event.key) {
             case KEY_ENTER:
                 return enter_pressed();
@@ -151,14 +161,29 @@ void bash_key_handler(const struct keyboard_event event) {
     }
 }
 
+void return_to_bash() {
+    init_bash();
+    restore_buffer();
+}
+
 void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event)) {
     save_buffer_content();
     clear_framebuffer();
     keyboard_set_handler(app_keyboard_handler);
 }
 
+// void sleep_timer() {
+//     if (last_time_interacted > 100) {
+//         start_screensaver();
+//         last_time_interacted = 0;
+//     } else {
+//         last_time_interacted++;
+//     }
+// }
+
 void init_bash() {
     keyboard_set_handler(bash_key_handler);
     clear_framebuffer();
+    // timer_set_handler(sleep_timer);
     app_name();
 }
