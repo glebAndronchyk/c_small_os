@@ -1,3 +1,5 @@
+#include "../../drivers/timer/timer.h"
+
 unsigned long seed = 12345;
 
 const unsigned long a = 1664525;
@@ -6,6 +8,7 @@ const unsigned long m = 4294967295; // 2^32
 
 unsigned long get_next_random() {
     seed = (a * seed + c) % m;
+    seed += get_system_time();
     return seed;
 }
 

@@ -16,5 +16,6 @@ void pause_timer_handler(char* name);
 void resume_timer_handler(char* name);
 void remove_timer_handler(char* name);
 void main_timer_handler();
+int get_system_time();
 
 #endif //TIMER_HANDLER_H

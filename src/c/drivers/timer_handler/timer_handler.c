@@ -6,7 +6,12 @@
 
 int debug_tick = 0;
 int timer_command_idx = 0;
-struct timer_command* timer_command_stack[TIMER_COMMANDS_COUNT];
+int system_time = 0;
+struct timer_command* timer_command_stack[TIMER_COMMANDS_COUNT + 1];
+
+int get_system_time() {
+    return system_time;
+}
 
 void pause_timer_handler(char* name) {
     for (int i = 0; i < timer_command_idx; i++) {
@@ -36,6 +41,7 @@ void remove_timer_handler(char* name) {
             for (int j = i; j < timer_command_idx - 1; j++) {
                 timer_command_stack[j] = timer_command_stack[j + 1];
             }
+
             timer_command_idx--;
             break;
         }
@@ -55,7 +61,15 @@ void add_timer_handler(timer_command_handler handler, char* name) {
 }
 
 void main_timer_handler() {
-    for (int i = 0; i < timer_command_idx; i++) {
+    if (debug_tick > 30) {
+        execution_success(timer_command_stack[1]->name);
+        debug_tick = 0;
+    } else {
+        debug_tick++;
+    }
+
+    system_time++;
+    for (int i = 1; i < timer_command_idx; i++) {
         struct timer_command* cmd = timer_command_stack[i];
 
         if (!cmd->is_paused) {
