@@ -1,16 +1,14 @@
 #ifndef SCREENSAVER_H
 #define SCREENSAVER_H
 
-#define MAX_STARS 300
-
 struct star {
     int pos_row;
     int pos_col;
     char color;
     int flickering_speed;
+    int current_tick;
+    int can_move;
 };
-
-extern struct star stars[MAX_STARS];
 
 int start_screensaver();
 

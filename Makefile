@@ -11,6 +11,7 @@ SRC_C   := \
 	src/c/drivers/keyboard/keyboard.c \
 	src/c/drivers/timer/timer.c \
 	src/c/drivers/file_system/file_system.c \
+	src/c/drivers/timer_handler/timer_handler.c \
 	src/c/bash/bash.c \
 	src/c/screensaver/screensaver.c \
 	src/c/bash/messages/messages.c \

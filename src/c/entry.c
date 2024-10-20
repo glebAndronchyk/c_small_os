@@ -3,6 +3,8 @@
 #include "drivers/timer/timer.h"
 #include "drivers/serial_port/serial_port.h"
 #include "bash/bash.h"
+#include "bash/messages/messages.h"
+#include "drivers/timer_handler/timer_handler.h"
 
 void exception_handler(u32 interrupt, u32 error, char *message) {
     serial_log(LOG_ERROR, message);
@@ -30,5 +32,6 @@ _Noreturn void halt_loop() {
 void kernel_entry() {
     init_kernel();
     init_bash();
+    timer_set_handler(main_timer_handler);
     halt_loop();
 }

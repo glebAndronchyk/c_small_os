@@ -5,6 +5,7 @@
 #include "bash.h"
 
 #include "../drivers/timer/timer.h"
+#include "../drivers/timer_handler/timer_handler.h"
 #include "../utils/string_length/string_length.h"
 #include "./messages/messages.h";
 #include "../screensaver/screensaver.h";
@@ -18,6 +19,8 @@ commands command_table[MAX_COMMANDS] = {
     { "write", write_file},
     {"delete", delete_file},
     {"sleep", start_screensaver},
+    {"sleep-pause", pause_sleep_command},
+    {"sleep-resume", resume_sleep_command}
 };
 
 int last_time_interacted = 0;
@@ -161,29 +164,47 @@ void bash_key_handler(const struct keyboard_event event) {
     }
 }
 
-void return_to_bash() {
-    init_bash();
-    restore_buffer();
-}
-
 void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event)) {
     save_buffer_content();
     clear_framebuffer();
     keyboard_set_handler(app_keyboard_handler);
 }
 
-// void sleep_timer() {
-//     if (last_time_interacted > 100) {
-//         start_screensaver();
-//         last_time_interacted = 0;
-//     } else {
-//         last_time_interacted++;
-//     }
-// }
+void sleep_timer() {
+    if (last_time_interacted > 100) {
+        start_screensaver();
+        last_time_interacted = 0;
+    } else {
+        last_time_interacted++;
+    }
+}
 
-void init_bash() {
+void return_to_bash() {
+    give_control_to_bash();
+    restore_buffer();
+    resume_timer_handler("sleep");
+}
+
+void give_control_to_bash() {
     keyboard_set_handler(bash_key_handler);
     clear_framebuffer();
-    // timer_set_handler(sleep_timer);
     app_name();
+}
+
+int pause_sleep_command() {
+    pause_timer_handler("sleep");
+    execution_success("Sleep paused");
+    return 1;
+}
+
+int resume_sleep_command() {
+    resume_timer_handler("sleep");
+    execution_success("Sleep resumed");
+    return 1;
+}
+
+
+void init_bash() {
+    give_control_to_bash();
+    add_timer_handler(sleep_timer, "sleep");
 }

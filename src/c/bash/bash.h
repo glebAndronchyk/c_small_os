@@ -26,6 +26,9 @@ void show_title();
 void init_bash();
 void clear_commands();
 void return_to_bash();
+void give_control_to_bash();
+int pause_sleep_command();
+int resume_sleep_command();
 void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event));
 
 #endif // BASH_H
