@@ -1,5 +1,6 @@
 #include "../../kernel/kernel.h"
 #include "keyboard.h"
+#include "../../bash/bash.h"
 
 #define KEYBOARD_DATA_PORT 0x60
 #define SCANCODES_KNOWN 89
@@ -111,6 +112,7 @@ void keyboard_handler(__attribute__((unused)) u32 interrupt) {
             event_type = EVENT_KEY_RELEASED;
         } else {
             event_type = EVENT_KEY_PRESSED;
+            last_time_interacted = 0;
         }
 
         // cut the event bit (allows to use a single table for keys)

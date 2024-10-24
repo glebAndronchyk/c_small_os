@@ -3,10 +3,11 @@
 #include "../framebuffer/framebuffer.h"
 
 #define MAX_FILE_CONTENT VGA_BUFFER_SIZE
+#define MAX_FILE_NAME 50
 #define MAX_FILES 10
 
 struct file {
-    char name[50];
+    char name[MAX_FILE_NAME];
     char content[MAX_FILE_CONTENT];
     int is_memory_used;
 } ;

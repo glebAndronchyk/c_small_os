@@ -31,7 +31,7 @@ int delete_file(char* name) {
                 string_copy(fs[i].name, "");
                 string_copy(fs[i].content, "");
                 execution_success("File deleted");
-                break;
+                return 1;
             }
         }
     }

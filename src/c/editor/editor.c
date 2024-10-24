@@ -1,6 +1,7 @@
 #include "../drivers/keyboard/keyboard.h"
 #include "../drivers/file_system/file_system.h"
 #include "../bash/bash.h"
+#include "../drivers/timer/timer.h"
 #include "../utils/string_copy/string_copy.h"
 #include "../utils/VGA_COLORS/VGA_COLORS.h"
 
@@ -61,9 +62,12 @@ void editor_key_handler(const struct keyboard_event event) {
     }
 }
 
+void fn() {}
+
 void start_editor(struct file* file_data) {
+    timer_set_handler(fn);
     used_file = file_data;
-    give_control_to_app(editor_key_handler);
+    give_control_to_app(editor_key_handler, 0);
     execution_success_sequentially("Editor v0.0.1");
     write_buffer_message(file_data->content, COLOR_WHITE, COLOR_BLACK);
 }

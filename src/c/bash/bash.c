@@ -5,27 +5,46 @@
 #include "bash.h"
 
 #include "../drivers/timer/timer.h"
-#include "../drivers/timer_handler/timer_handler.h"
 #include "../utils/string_length/string_length.h"
 #include "./messages/messages.h";
 #include "../screensaver/screensaver.h";
+#include "../utils/string_concat/string_concat.h"
 
 commands command_table[MAX_COMMANDS] = {
-    { "clear", clear_commands},
-    { "create", create_file},
-    { "list", list_files},
-    { "read", read_file},
-    { "restore-vga", restore_buffer},
-    { "write", write_file},
-    {"delete", delete_file},
-    {"sleep", start_screensaver},
-    {"sleep-pause", pause_sleep_command},
-    {"sleep-resume", resume_sleep_command}
+    { "clear", "Clears buffer", clear_commands},
+    { "create", "Creates new file", create_file},
+    { "list", "Outputs list with all files", list_files},
+    { "read", "Reads data from file", read_file},
+    { "write", "Writes data to file", write_file},
+    {"delete", "Deletes file", delete_file},
+    {"sleep", "Starts screensaver", start_screensaver},
+    { "help", "Shows all commands", show_help_list}
 };
 
 int last_time_interacted = 0;
+int system_time = 0;
 
-// command_handler timer_commands_stack[MAX_COMMANDS];
+int show_help_list() {
+    char output_msg[500];
+    for (int i = 0; i < MAX_COMMANDS; i++) {
+        if (string_length(command_table[i].name) > 0) {
+            string_concat(output_msg, command_table[i].name);
+            string_concat(output_msg, " - ");
+            string_concat(output_msg, command_table[i].description);
+            if (i != MAX_COMMANDS - 1) {
+                string_concat(output_msg, "\n");
+            }
+        }
+    }
+
+    execution_success(output_msg);
+    output_msg[0] = '\0';
+    return 1;
+}
+
+int get_system_time() {
+    return system_time;
+}
 
 void clear_commands() {
     clear_framebuffer();
@@ -151,8 +170,6 @@ void char_pressed(char key) {
 
 void bash_key_handler(const struct keyboard_event event) {
     if (event.key_character && event.type == EVENT_KEY_PRESSED) {
-        last_time_interacted = 0;
-
         switch (event.key) {
             case KEY_ENTER:
                 return enter_pressed();
@@ -164,13 +181,18 @@ void bash_key_handler(const struct keyboard_event event) {
     }
 }
 
-void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event)) {
+void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event), int go_new_line) {
+    if (go_new_line) {
+        new_line();
+    }
+
     save_buffer_content();
     clear_framebuffer();
     keyboard_set_handler(app_keyboard_handler);
 }
 
 void sleep_timer() {
+    system_time++;
     if (last_time_interacted > 100) {
         start_screensaver();
         last_time_interacted = 0;
@@ -182,29 +204,15 @@ void sleep_timer() {
 void return_to_bash() {
     give_control_to_bash();
     restore_buffer();
-    resume_timer_handler("sleep");
 }
 
 void give_control_to_bash() {
     keyboard_set_handler(bash_key_handler);
+    timer_set_handler(sleep_timer);
     clear_framebuffer();
     app_name();
 }
 
-int pause_sleep_command() {
-    pause_timer_handler("sleep");
-    execution_success("Sleep paused");
-    return 1;
-}
-
-int resume_sleep_command() {
-    resume_timer_handler("sleep");
-    execution_success("Sleep resumed");
-    return 1;
-}
-
-
 void init_bash() {
     give_control_to_bash();
-    add_timer_handler(sleep_timer, "sleep");
 }

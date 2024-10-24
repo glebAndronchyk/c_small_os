@@ -3,7 +3,7 @@
 
 char get_color_word(unsigned char background, unsigned char foreground);
 
-int rgb_offset = 0x8;
+extern int rgb_offset;
 
 typedef enum {
     COLOR_BLACK = 0x0,

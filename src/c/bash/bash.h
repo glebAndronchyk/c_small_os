@@ -8,9 +8,11 @@
 #define MAX_COMMANDS 512
 
 typedef int (*command_handler)(char* arg);
+extern int last_time_interacted;
 
 typedef struct {
     char name[COMMAND_BUFFER_SIZE];
+    char description[COMMAND_BUFFER_SIZE];
     command_handler handler;
 } commands;
 
@@ -27,8 +29,8 @@ void init_bash();
 void clear_commands();
 void return_to_bash();
 void give_control_to_bash();
-int pause_sleep_command();
-int resume_sleep_command();
-void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event));
+int get_system_time();
+int show_help_list();
+void give_control_to_app(void (*app_keyboard_handler)(struct keyboard_event event), int go_new_line);
 
 #endif // BASH_H

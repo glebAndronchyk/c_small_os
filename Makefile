@@ -8,21 +8,20 @@ SRC_C   := \
 	src/c/kernel/gdt.c \
 	src/c/kernel/exception_handler.c \
 	src/c/kernel/interrupt_handler.c \
-	src/c/drivers/keyboard/keyboard.c \
-	src/c/drivers/timer/timer.c \
-	src/c/drivers/file_system/file_system.c \
-	src/c/drivers/timer_handler/timer_handler.c \
-	src/c/bash/bash.c \
-	src/c/screensaver/screensaver.c \
-	src/c/bash/messages/messages.c \
-	src/c/editor/editor.c \
-	src/c/drivers/serial_port/serial_port.c \
 	src/c/utils/cmp_string/cmp_string.c \
 	src/c/utils/string_concat/string_concat.c \
 	src/c/utils/string_copy/string_copy.c \
 	src/c/utils/string_length/string_length.c \
 	src/c/utils/random/random.c \
 	src/c/utils/VGA_COLORS/VGA_COLORS.c \
+	src/c/drivers/keyboard/keyboard.c \
+	src/c/drivers/timer/timer.c \
+	src/c/drivers/file_system/file_system.c \
+	src/c/bash/bash.c \
+	src/c/screensaver/screensaver.c \
+	src/c/bash/messages/messages.c \
+	src/c/editor/editor.c \
+	src/c/drivers/serial_port/serial_port.c \
 	src/c/drivers/framebuffer/framebuffer.c \
 
 OBJ_ASM := $(patsubst src/asm/%.asm, build/asm/%.o, $(SRC_ASM))
